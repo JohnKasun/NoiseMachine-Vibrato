@@ -1,6 +1,6 @@
 #include "Lfo.h"
 
-Lfo::Lfo(int numChannels, float sampleRate){
+Lfo::Lfo(float sampleRate){
 
 	mParamRanges[amplitude][0] = 0.0f;
 	mParamRanges[amplitude][1] = 1.0f;
@@ -11,7 +11,6 @@ Lfo::Lfo(int numChannels, float sampleRate){
 		mParamValues[param] = mParamRanges[param][0];
 	}
 
-	mNumChannels = numChannels;
 	mSampleRate = sampleRate;
 
 	for (int i = 0; i < bufferSize; i++) {
@@ -24,7 +23,11 @@ Lfo::~Lfo(){
 }
 
 Error_t Lfo::setParam(Param_t param, float value){
-	if (!isInParamRange)
+	if (!isInParamRange(param, value))
+		return Error_t::kFunctionInvalidArgsError;
+
+	mParamValues[param] = value;
+	return Error_t::kNoError;
 }
 
 float Lfo::getParam(Param_t param) const{

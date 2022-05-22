@@ -15,7 +15,7 @@ public:
 		numParams
 	};
 
-	Lfo(int numChannels, float sampleRate);
+	Lfo(float sampleRate);
 	~Lfo();
 
 	Error_t setParam(Param_t param, float value);
@@ -30,6 +30,5 @@ private:
 	float mParamValues[numParams]{};
 	float mParamRanges[numParams][2]{};
 
-	int mNumChannels = 2;
 	float mSampleRate = 44100.0f;
 };
