@@ -18,10 +18,6 @@ Lfo::Lfo(float sampleRate){
 	}
 }
 
-Lfo::~Lfo(){
-
-}
-
 Error_t Lfo::setParam(Param_t param, float value){
 	if (!isInParamRange(param, value))
 		return Error_t::kFunctionInvalidArgsError;

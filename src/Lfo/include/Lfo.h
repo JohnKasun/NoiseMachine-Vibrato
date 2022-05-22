@@ -16,7 +16,7 @@ public:
 	};
 
 	Lfo(float sampleRate);
-	~Lfo();
+	~Lfo() = default;
 
 	Error_t setParam(Param_t param, float value);
 	float getParam(Param_t param) const;
