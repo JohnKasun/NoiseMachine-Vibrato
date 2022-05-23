@@ -13,8 +13,8 @@ Lfo::Lfo(float sampleRate){
 
 	mSampleRate = sampleRate;
 
-	for (int i = 0; i < bufferSize; i++) {
-		buffer.putPostInc(sinf(2.0f * M_PI / bufferSize * i));
+	for (int i = 0; i < mBuffer.getLength(); i++) {
+		mBuffer.putPostInc(sinf(2.0f * M_PI / mBuffer.getLength() * i));
 	}
 }
 
@@ -31,7 +31,9 @@ float Lfo::getParam(Param_t param) const{
 }
 
 float Lfo::process(){
-	return buffer.getPostInc();
+	float currentValue = mBuffer.get(mCurrentIndex);
+	mCurrentIndex += mParamValues[freqInHz] / mSampleRate * mBuffer.getLength();
+	return currentValue;
 }
 
 bool Lfo::isInParamRange(Param_t param, float value) const{
