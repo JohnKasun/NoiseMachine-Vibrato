@@ -2,9 +2,9 @@
 
 Vibrato::Vibrato() {
 	mParamRanges[widthInSec][0] = 0.0f;
-	mParamRanges[widthInSec][1] = 10.0f;
+	mParamRanges[widthInSec][1] = 0.5f;
 	mParamRanges[freqInHz][0] = 0.0f;
-	mParamRanges[freqInHz][1] = 5.0f;
+	mParamRanges[freqInHz][1] = 10.0f;
 
 	for (int param = 0; param < numParams; param++)
 		mParamValues[param] = mParamRanges[param][0];
