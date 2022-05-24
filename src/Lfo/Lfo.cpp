@@ -2,13 +2,8 @@
 
 Lfo::Lfo(float sampleRate){
 
-	mParamRanges[amplitude][0] = 0.0f;
-	mParamRanges[amplitude][1] = 1.0f;
-	mParamRanges[freqInHz][0] = 0.0f;
-	mParamRanges[freqInHz][1] = 5.0f;
-
 	for (int param = 0; param < numParams; param++) {
-		mParamValues[param] = mParamRanges[param][0];
+		mParamValues[param] = 0.0f;
 	}
 
 	mSampleRate = sampleRate;
@@ -18,12 +13,8 @@ Lfo::Lfo(float sampleRate){
 	}
 }
 
-Error_t Lfo::setParam(Param_t param, float value){
-	if (!isInParamRange(param, value))
-		return Error_t::kFunctionInvalidArgsError;
-
+void Lfo::setParam(Param_t param, float value){
 	mParamValues[param] = value;
-	return Error_t::kNoError;
 }
 
 float Lfo::getParam(Param_t param) const{
@@ -34,8 +25,4 @@ float Lfo::process(){
 	float currentValue = mBuffer.get(mCurrentIndex);
 	mCurrentIndex += mParamValues[freqInHz] / mSampleRate * mBuffer.getLength();
 	return currentValue;
-}
-
-bool Lfo::isInParamRange(Param_t param, float value) const{
-	return (mParamRanges[param][0] <= value && value <= mParamRanges[param][1]);
 }

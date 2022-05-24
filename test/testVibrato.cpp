@@ -12,8 +12,10 @@ TEST_CASE("Error checking", "[Vibrato]") {
 		REQUIRE(vibrato->init(-1, 44100) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->init(1, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->init(2, 48000) == Error_t::kNoError);
+		vibrato->reset();
 		REQUIRE(vibrato->init(-234235, -2342) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->init(1, 22050) == Error_t::kNoError);
+		vibrato->reset();
 		REQUIRE(vibrato->init(0, 0) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->init(0, 1) == Error_t::kNoError);
 	}
