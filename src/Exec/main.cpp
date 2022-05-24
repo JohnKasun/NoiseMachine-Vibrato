@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
 
 	// Initialize
 	vibrato->init(fileSpec.iNumChannels, fileSpec.fSampleRateInHz);
-	vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5f);
-	vibrato->setParam(Vibrato::Param_t::freqInHz, 0.5f);
+	vibrato->setParam(Vibrato::Param_t::widthInSec, 0.001f);
+	vibrato->setParam(Vibrato::Param_t::freqInHz, 5.0f);
 
 	// Process
 	long long iNumFrames = fileBlockSize;

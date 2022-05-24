@@ -21,6 +21,7 @@ TEST_CASE("Error checking", "[Vibrato]") {
 	}
 
 	SECTION("Param setting") {
+		vibrato->init(2, 44100);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0) == Error_t::kNoError);
