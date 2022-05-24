@@ -49,6 +49,15 @@ Error_t Vibrato::setParam(Param_t param, float value){
 	if (!isInParamRange(param, value))
 		return Error_t::kFunctionInvalidArgsError;
 
+	// TODO: Make this better
+	if (param == Param_t::widthInSec) {
+		if (value > mParamValues[delayInSec])
+			return Error_t::kFunctionInvalidArgsError;
+	}
+	if (param == Param_t::delayInSec) {
+		if (value < mParamValues[widthInSec])
+			return Error_t::kFunctionInvalidArgsError;
+	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;
 }
