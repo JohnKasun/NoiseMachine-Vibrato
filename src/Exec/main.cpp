@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
 
 	// Initialize
 	vibrato->init(fileSpec.iNumChannels, fileSpec.fSampleRateInHz);
-	vibrato->setParam(Vibrato::Param_t::delayInSec, 0.5f);
 	vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5f);
 	vibrato->setParam(Vibrato::Param_t::freqInHz, 0.5f);
 

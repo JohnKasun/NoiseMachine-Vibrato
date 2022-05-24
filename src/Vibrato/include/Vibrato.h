@@ -12,7 +12,6 @@ class Vibrato{
 
 public:
 	enum Param_t {
-		delayInSec,
 		widthInSec,
 		freqInHz,
 
