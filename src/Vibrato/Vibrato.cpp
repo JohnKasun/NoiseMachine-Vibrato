@@ -2,7 +2,7 @@
 
 Vibrato::Vibrato() {
 	mParamRanges[widthInSec][0] = 0.0f;
-	mParamRanges[widthInSec][1] = 1.0f;
+	mParamRanges[widthInSec][1] = 10.0f;
 	mParamRanges[freqInHz][0] = 0.0f;
 	mParamRanges[freqInHz][1] = 1.0f;
 
@@ -25,7 +25,7 @@ Error_t Vibrato::init(int numChannels, float sampleRate){
 	mSampleRate = sampleRate;
 	for (int c = 0; c < mNumChannels; c++) {
 		mLfo.emplace_back(new Lfo(mSampleRate));
-		mDelayLine.emplace_back(new CRingBuffer<float>(2 + (mParamRanges[widthInSec][1] + 2 * mParamRanges[widthInSec][1]) * mSampleRate));
+		mDelayLine.emplace_back(new CRingBuffer<float>(2 + 3 * mParamRanges[widthInSec][1] * mSampleRate));
 	}
 	mIsInitialized = true;
 	return Error_t::kNoError;
@@ -46,6 +46,11 @@ Error_t Vibrato::setParam(Param_t param, float value){
 	if (!isInParamRange(param, value))
 		return Error_t::kFunctionInvalidArgsError;
 
+	if (param == Param_t::widthInSec) {
+		for (int c = 0; c < mNumChannels; c++) {
+			mDelayLine[c]->setWriteIdx(2 + 3 * value * mSampleRate);
+		}
+	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;
 }
