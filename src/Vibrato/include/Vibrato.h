@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 #include "ErrorDef.h"
 #include "Util.h"
 #include "Lfo.h"
@@ -33,4 +36,5 @@ private:
 
 	int mNumChannels = 2;
 	float mSampleRate = 44100.0f;
+	std::vector<std::unique_ptr<Lfo>> mLfo;
 };

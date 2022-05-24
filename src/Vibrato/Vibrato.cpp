@@ -1,6 +1,6 @@
 #include "Vibrato.h"
 
-Vibrato::Vibrato(){
+Vibrato::Vibrato() {
 	mParamRanges[delayInSec][0] = 0.0f;
 	mParamRanges[delayInSec][1] = 1.0f;
 	mParamRanges[widthInSec][0] = 0.0f;
@@ -10,6 +10,10 @@ Vibrato::Vibrato(){
 
 	for (int param = 0; param < numParams; param++)
 		mParamValues[param] = mParamRanges[param][0];
+
+	for (int c = 0; c < mNumChannels; c++) {
+		mLfo.emplace_back(new Lfo(mSampleRate));
+	}
 }
 
 Vibrato::~Vibrato(){
@@ -24,12 +28,20 @@ Error_t Vibrato::init(int numChannels, float sampleRate){
 
 	mNumChannels = numChannels;
 	mSampleRate = sampleRate;
+	mLfo.clear();
+	for (int c = 0; c < mNumChannels; c++) {
+		mLfo.emplace_back(new Lfo(mSampleRate));
+	}
 	return Error_t::kNoError;
 }
 
 Error_t Vibrato::reset(){
 	mNumChannels = 2;
 	mSampleRate = 44100.0f;
+	mLfo.clear();
+	for (int c = 0; c < mNumChannels; c++) {
+		mLfo.emplace_back(new Lfo(mSampleRate));
+	}
 	return Error_t::kNoError;
 }
 
