@@ -29,20 +29,18 @@ int main(int argc, char* argv[])
 
 	string inputFilePath{};
 	string outputFilePath{};
-	float delayInSec{};
 	float widthInSec{};
 	float freqInHz{};
 
-	if (argc < 6){
+	if (argc < 5){
 		cout << "Incorrect number of arguments!" << endl;
 		return -1;
 	}
 
 	inputFilePath = argv[1];
 	outputFilePath = argv[2];
-	delayInSec = atof(argv[3]);
-	widthInSec = atof(argv[4]);
-	freqInHz   = atof(argv[5]);
+	widthInSec = atof(argv[3]);
+	freqInHz   = atof(argv[4]);
 
 	// Open Audio Files
 	CAudioFileIf::create(audioFileIn);
@@ -66,8 +64,8 @@ int main(int argc, char* argv[])
 
 	// Initialize
 	vibrato->init(fileSpec.iNumChannels, fileSpec.fSampleRateInHz);
-	vibrato->setParam(Vibrato::Param_t::widthInSec, 0.001f);
-	vibrato->setParam(Vibrato::Param_t::freqInHz, 5.0f);
+	vibrato->setParam(Vibrato::Param_t::widthInSec, widthInSec);
+	vibrato->setParam(Vibrato::Param_t::freqInHz, freqInHz);
 
 	// Process
 	long long iNumFrames = fileBlockSize;
