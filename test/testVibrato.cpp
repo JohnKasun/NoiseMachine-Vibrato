@@ -45,5 +45,9 @@ TEST_CASE("Error checking", "[Vibrato]") {
 		REQUIRE(vibrato->getParam(Vibrato::Param_t::freqInHz) == 0.25f);
 	}
 
+	SECTION("Correct Output") {
+
+	}
+
 	vibrato.reset();
 }
