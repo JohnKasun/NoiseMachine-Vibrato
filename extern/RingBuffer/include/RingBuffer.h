@@ -80,9 +80,9 @@ public:
     /*! return the value at the current read index and increment the read pointer
     \return float the value from the read index
     */
-    T getPostInc()
+    T getPostInc(float fOffset = 0)
     {
-        T tValue = get();
+        T tValue = get(fOffset);
         incIdx(m_iReadIdx);
         return tValue;
     }

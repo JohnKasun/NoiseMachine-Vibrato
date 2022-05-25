@@ -35,6 +35,9 @@ Error_t Vibrato::reset(){
 	if (mIsInitialized) {
 		mNumChannels = 0;
 		mSampleRate = 0.0f;
+		mDelay = 0;
+		for (int param = 0; param < numParams; param++)
+			mParamValues[param] = mParamRanges[param][0];
 		mLfo.clear();
 		mDelayLine.clear();
 		mIsInitialized = false;
@@ -49,15 +52,18 @@ Error_t Vibrato::setParam(Param_t param, float value){
 	if (!isInParamRange(param, value))
 		return Error_t::kFunctionInvalidArgsError;
 
-	if (param == Param_t::freqInHz) {
+	switch (param) {
+	case freqInHz:
 		for (int c = 0; c < mNumChannels; c++) {
 			mLfo[c]->setParam(Lfo::Param_t::freqInHz, value);
 		}
-	}
-	if (param == Param_t::widthInSec) {
+		break;
+	case widthInSec:
 		for (int c = 0; c < mNumChannels; c++) {
-			mLfo[c]->setParam(Lfo::Param_t::amplitude, value * mSampleRate);
-			mDelayLine[c]->setWriteIdx(2 + (3 * value * mSampleRate));
+			float widthInSamp = value * mSampleRate;
+			mDelay = widthInSamp;
+			mLfo[c]->setParam(Lfo::Param_t::amplitude, widthInSamp);
+			mDelayLine[c]->setWriteIdx(2 + mDelay + widthInSamp * 2);
 		}
 	}
 	mParamValues[param] = value;
@@ -75,9 +81,8 @@ Error_t Vibrato::process(float** inputBuffer, float** outputBuffer, int numFrame
 	for (int c = 0; c < mNumChannels; c++) {
 		for (int i = 0; i < numFrames; i++) {
 			mDelayLine[c]->putPostInc(inputBuffer[c][i]);
-			float lfoValue = mLfo[c]->process();
-			float index = 1 + mLfo[c]->getParam(Lfo::Param_t::amplitude) + lfoValue;
-			outputBuffer[c][i] = mDelayLine[c]->get(mDelayLine[c]->getNumValuesInBuffer() - index - 1);
+			float index = mDelay + mLfo[c]->process();
+			outputBuffer[c][i] = mDelayLine[c]->getPostInc(index);
 		}
 	}
 	return Error_t::kNoError;
