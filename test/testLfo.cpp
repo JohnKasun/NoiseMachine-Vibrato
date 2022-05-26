@@ -3,13 +3,13 @@
 #include "catch.hpp"
 #include "Lfo.h"
 
-void CHECK_ARRAY_CLOSE(float* buff1, float* buff2, int numSamples, float tolerance) {
+void CHECK_ARRAY_CLOSE_1(float* buff1, float* buff2, int numSamples, float tolerance) {
 	for (int i = 0; i < numSamples; i++) {
 		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
 	}
 }
 
-TEST_CASE("Correct Output", "[Lfo]") {
+TEST_CASE("[Lfo] Correct Output") {
 	std::unique_ptr<float> outBuffTest = nullptr;
 	std::unique_ptr<float> outBuffGrd = nullptr;
 	std::unique_ptr<Lfo> lfo = nullptr;
@@ -30,7 +30,7 @@ TEST_CASE("Correct Output", "[Lfo]") {
 		outBuffTest.get()[i] = lfo->process();
 	}
 
-	CHECK_ARRAY_CLOSE(outBuffTest.get(), outBuffGrd.get(), numSamples, 1E-4);
+	CHECK_ARRAY_CLOSE_1(outBuffTest.get(), outBuffGrd.get(), numSamples, 1E-4);
 
 	lfo.reset();
 	outBuffGrd.reset();

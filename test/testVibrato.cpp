@@ -1,10 +1,32 @@
 #pragma once
 
+#include <iostream>
+#include <fstream>
+
 #include "catch.hpp"
 #include "Vibrato.h"
 #include "Synthesis.h"
 
-TEST_CASE("Error checking", "[Vibrato]") {
+void CHECK_ARRAY_CLOSE(float* buff1, float* buff2, int numSamples, float tolerance) {
+	for (int i = 0; i < numSamples; i++) {
+		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
+	}
+}
+
+void loadFile(const char* filePath, std::vector<float>& dataVec) {
+	std::ifstream in_file;
+	in_file.open(filePath);
+	if (!in_file) {
+		std::cout << "Error opening file " << filePath << std::endl;
+		return;
+	}
+	float value{};
+	while (in_file >> value) {
+		dataVec.push_back(value);
+	}
+}
+
+TEST_CASE("[Vibrato] Error checking") {
 	std::unique_ptr<Vibrato> vibrato = nullptr;
 	vibrato.reset(new Vibrato());
 
@@ -25,7 +47,7 @@ TEST_CASE("Error checking", "[Vibrato]") {
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0) == Error_t::kNoError);
-		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 1) == Error_t::kNoError);
+		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5) == Error_t::kNoError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, 1) == Error_t::kNoError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, 0) == Error_t::kNoError);
 
@@ -45,9 +67,49 @@ TEST_CASE("Error checking", "[Vibrato]") {
 		REQUIRE(vibrato->getParam(Vibrato::Param_t::freqInHz) == 0.25f);
 	}
 
-	SECTION("Correct Output") {
+	vibrato.reset();
+}
 
+TEST_CASE("[Vibrato] Correct Output") {
+	std::unique_ptr<Vibrato> vibrato = nullptr;
+	float** inputBuffer = nullptr;
+	float** testBuffer = nullptr;
+	const int numChannels = 1;
+	const int numSamples = 10;
+	const float sampleRate = 44100;
+	std::vector<float> groundBuffer;
+
+	vibrato.reset(new Vibrato());
+	vibrato->init(numChannels, sampleRate);
+	inputBuffer = new float* [numChannels] {};
+	testBuffer = new float* [numChannels] {};
+	for (int c = 0; c < numChannels; c++) {
+		inputBuffer[c] = new float[numSamples] {};
+		testBuffer[c] = new float[numSamples] {};
+	}
+
+	SECTION("Increasing by one") {
+		loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/outTest.txt", groundBuffer);
+		for (int c = 0; c < numChannels; c++) {
+			for (int i = 0; i < numSamples; i++) {
+				inputBuffer[c][i] = i;
+			}
+		}
+
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5);
+		vibrato->process(inputBuffer, testBuffer, numSamples);
+
+		
 	}
 
 	vibrato.reset();
+	for (int c = 0; c < numChannels; c++) {
+		delete[] inputBuffer[c];
+		delete[] testBuffer[c];
+	}
+	delete[] inputBuffer;
+	delete[] testBuffer;
+	inputBuffer = nullptr;
+	testBuffer = nullptr;
 }
