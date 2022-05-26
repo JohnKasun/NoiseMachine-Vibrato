@@ -7,9 +7,9 @@
 #include "Vibrato.h"
 #include "Synthesis.h"
 
-void CHECK_ARRAY_CLOSE(float* buff1, float* buff2, int numSamples, float tolerance) {
+void CHECK_ARRAY_CLOSE(float** buff1, std::vector<float>& buff2, int numSamples, float tolerance) {
 	for (int i = 0; i < numSamples; i++) {
-		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
+		REQUIRE(abs(buff1[0][i] - buff2[i]) <= tolerance);
 	}
 }
 
@@ -75,7 +75,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 	float** inputBuffer = nullptr;
 	float** testBuffer = nullptr;
 	const int numChannels = 1;
-	const int numSamples = 10;
+	const int numSamples = 30;
 	const float sampleRate = 44100;
 	std::vector<float> groundBuffer;
 
@@ -92,15 +92,14 @@ TEST_CASE("[Vibrato] Correct Output") {
 		loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/outTest.txt", groundBuffer);
 		for (int c = 0; c < numChannels; c++) {
 			for (int i = 0; i < numSamples; i++) {
-				inputBuffer[c][i] = i;
+				inputBuffer[c][i] = i + 1;
 			}
 		}
 
-		vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5);
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 5);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.0005);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
-
-		
+		CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, numSamples, 1E-3);
 	}
 
 	vibrato.reset();
