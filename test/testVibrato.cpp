@@ -6,6 +6,7 @@
 #include "catch.hpp"
 #include "Vibrato.h"
 #include "Synthesis.h"
+#include "Vector.h"
 
 void CHECK_ARRAY_CLOSE(float** buff1, std::vector<float>& buff2, int numSamples, float tolerance) {
 	for (int i = 0; i < numSamples; i++) {
@@ -75,9 +76,11 @@ TEST_CASE("[Vibrato] Correct Output") {
 	float** inputBuffer = nullptr;
 	float** testBuffer = nullptr;
 	const int numChannels = 1;
-	const int numSamples = 30;
+	const int numSamples = 1000;
 	const float sampleRate = 44100;
 	std::vector<float> groundBuffer;
+	float freq{};
+	float width{};
 
 	vibrato.reset(new Vibrato());
 	vibrato->init(numChannels, sampleRate);
@@ -88,19 +91,36 @@ TEST_CASE("[Vibrato] Correct Output") {
 		testBuffer[c] = new float[numSamples] {};
 	}
 
-	SECTION("Increasing by one") {
-		loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/outTest.txt", groundBuffer);
+	SECTION("Increment") {
 		for (int c = 0; c < numChannels; c++) {
 			for (int i = 0; i < numSamples; i++) {
 				inputBuffer[c][i] = i + 1;
 			}
 		}
-
-		vibrato->setParam(Vibrato::Param_t::freqInHz, 5);
-		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.0005);
+		SECTION("Params1") {
+			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest1.txt", groundBuffer);
+			freq = 5.0f;
+			width = 0.0005f;
+		}
+		//SECTION("Params2") {
+		//	loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest2.txt", groundBuffer);
+		//	freq = 1.0f;
+		//	width = 0.005f;
+		//}
+		SECTION("Params3") {
+			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest3.txt", groundBuffer);
+			freq = 3.0f;
+			width = 0.001f;
+		}
+		vibrato->setParam(Vibrato::Param_t::freqInHz, freq);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, width);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
-		CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, numSamples, 1E-3);
+		CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
+		groundBuffer.clear();
+		for (int c = 0; c < numChannels; c++)
+			CVectorFloat::setZero(testBuffer[c], numSamples);
 	}
+
 
 	vibrato.reset();
 	for (int c = 0; c < numChannels; c++) {
