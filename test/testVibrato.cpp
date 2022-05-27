@@ -25,6 +25,7 @@ void loadFile(const char* filePath, std::vector<float>& dataVec) {
 	while (in_file >> value) {
 		dataVec.push_back(value);
 	}
+	in_file.close();
 }
 
 TEST_CASE("[Vibrato] Error checking") {
@@ -112,15 +113,15 @@ TEST_CASE("[Vibrato] Correct Output") {
 			freq = 3.0f;
 			width = 0.001f;
 		}
-		vibrato->setParam(Vibrato::Param_t::freqInHz, freq);
-		vibrato->setParam(Vibrato::Param_t::widthInSec, width);
-		vibrato->process(inputBuffer, testBuffer, numSamples);
-		CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
-		groundBuffer.clear();
-		for (int c = 0; c < numChannels; c++)
-			CVectorFloat::setZero(testBuffer[c], numSamples);
 	}
 
+	vibrato->setParam(Vibrato::Param_t::freqInHz, freq);
+	vibrato->setParam(Vibrato::Param_t::widthInSec, width);
+	vibrato->process(inputBuffer, testBuffer, numSamples);
+	CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
+	groundBuffer.clear();
+	for (int c = 0; c < numChannels; c++)
+		CVectorFloat::setZero(testBuffer[c], numSamples);
 
 	vibrato.reset();
 	for (int c = 0; c < numChannels; c++) {
