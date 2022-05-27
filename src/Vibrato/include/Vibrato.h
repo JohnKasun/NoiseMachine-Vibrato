@@ -37,7 +37,6 @@ private:
 	bool mIsInitialized = false;
 	int mNumChannels = 0;
 	float mSampleRate = 0.0f;
-	int mDelay = 0;
 	std::vector<std::unique_ptr<Lfo>> mLfo;
 	std::vector<std::unique_ptr<CRingBuffer<float>>> mDelayLine;
 };

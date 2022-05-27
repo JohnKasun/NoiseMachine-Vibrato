@@ -102,11 +102,11 @@ TEST_CASE("[Vibrato] Correct Output") {
 			freq = 5.0f;
 			width = 0.0005f;
 		}
-		//SECTION("Params2") {
-		//	loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest2.txt", groundBuffer);
-		//	freq = 1.0f;
-		//	width = 0.005f;
-		//}
+		SECTION("Params2") {
+			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest2.txt", groundBuffer);
+			freq = 1.0f;
+			width = 0.005f;
+		}
 		SECTION("Params3") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/IncrementTest3.txt", groundBuffer);
 			freq = 3.0f;
