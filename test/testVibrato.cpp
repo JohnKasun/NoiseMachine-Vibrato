@@ -49,7 +49,7 @@ TEST_CASE("[Vibrato] Error checking") {
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, -1) == Error_t::kFunctionInvalidArgsError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0) == Error_t::kNoError);
-		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0.5) == Error_t::kNoError);
+		REQUIRE(vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005) == Error_t::kNoError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, 1) == Error_t::kNoError);
 		REQUIRE(vibrato->setParam(Vibrato::Param_t::freqInHz, 0) == Error_t::kNoError);
 
@@ -57,15 +57,15 @@ TEST_CASE("[Vibrato] Error checking") {
 
 	SECTION("Param getting") {
 		vibrato->init(2, 44100);
-		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.25f);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.00025f);
 		vibrato->setParam(Vibrato::Param_t::freqInHz, 0.25f);
-		REQUIRE(vibrato->getParam(Vibrato::Param_t::widthInSec) == 0.25f);
+		REQUIRE(vibrato->getParam(Vibrato::Param_t::widthInSec) == 0.00025f);
 		REQUIRE(vibrato->getParam(Vibrato::Param_t::freqInHz) == 0.25f);
 
 		// do invalid param setting
 		vibrato->setParam(Vibrato::Param_t::widthInSec, 444.0f);
 		vibrato->setParam(Vibrato::Param_t::freqInHz, -1.0f);
-		REQUIRE(vibrato->getParam(Vibrato::Param_t::widthInSec) == 0.25f);
+		REQUIRE(vibrato->getParam(Vibrato::Param_t::widthInSec) == 0.00025f);
 		REQUIRE(vibrato->getParam(Vibrato::Param_t::freqInHz) == 0.25f);
 	}
 
@@ -77,7 +77,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 	float** inputBuffer = nullptr;
 	float** testBuffer = nullptr;
 	const int numChannels = 1;
-	const int numSamples = 10000;
+	const int numSamples = 1000;
 	const float sampleRate = 44100;
 	std::vector<float> groundBuffer;
 
@@ -94,9 +94,9 @@ TEST_CASE("[Vibrato] Correct Output") {
 		for (int c = 0; c < numChannels; c++) {
 			CVectorFloat::setZero(inputBuffer[c], numSamples);
 		}
-		loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/ZeroInput.txt", groundBuffer);
-		vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-		vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+		groundBuffer.clear();
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 1.0f);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005f);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
 		CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 	}
@@ -107,36 +107,50 @@ TEST_CASE("[Vibrato] Correct Output") {
 		}
 		SECTION("Params1") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest1.txt", groundBuffer);
-			vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-			vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 10.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005f);
 			vibrato->process(inputBuffer, testBuffer, numSamples);
 			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 		}
 		SECTION("Params2") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest2.txt", groundBuffer);
-			vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-			vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 10.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.002f);
 			vibrato->process(inputBuffer, testBuffer, numSamples);
 			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 		}
 		SECTION("Params3") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest3.txt", groundBuffer);
-			vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-			vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 3.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.001f);
 			vibrato->process(inputBuffer, testBuffer, numSamples);
 			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 		}
 		SECTION("Params4") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest4.txt", groundBuffer);
-			vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-			vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 7.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.004f);
 			vibrato->process(inputBuffer, testBuffer, numSamples);
 			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 		}
 		SECTION("Params5") {
 			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest5.txt", groundBuffer);
-			vibrato->setParam(Vibrato::Param_t::freqInHz, 1);
-			vibrato->setParam(Vibrato::Param_t::widthInSec, 1);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 1.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.00025f);
+			vibrato->process(inputBuffer, testBuffer, numSamples);
+			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
+		}
+		SECTION("Params6") {
+			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest6.txt", groundBuffer);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 0.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005f);
+			vibrato->process(inputBuffer, testBuffer, numSamples);
+			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
+		}
+		SECTION("Params7") {
+			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/SineTest7.txt", groundBuffer);
+			vibrato->setParam(Vibrato::Param_t::freqInHz, 4.0f);
+			vibrato->setParam(Vibrato::Param_t::widthInSec, 0.0f);
 			vibrato->process(inputBuffer, testBuffer, numSamples);
 			CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
 		}

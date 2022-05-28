@@ -24,6 +24,5 @@ float Lfo::getParam(Param_t param) const{
 float Lfo::process(){
 	float currentValue = mBuffer.get(mCurrentIndex);
 	mCurrentIndex += mParamValues[freqInHz] / mSampleRate * mBuffer.getLength();
-	// TODO: Wrap index around buffer Length
 	return mParamValues[amplitude] * currentValue;
 }
