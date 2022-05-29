@@ -1,0 +1,3 @@
+[submodule "CommandLine/project/JUCE"]
+	path = CommandLine/project/JUCE
+	url = https://github.com/juce-framework/JUCE.git
