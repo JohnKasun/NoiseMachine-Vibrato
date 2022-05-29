@@ -26,6 +26,7 @@ void loadFile(const char* filePath, std::vector<float>& dataVec) {
 	in_file.open(filePath);
 	if (!in_file) {
 		std::cout << "Error opening file " << filePath << std::endl;
+		in_file.close();
 		return;
 	}
 	float value{};
