@@ -111,31 +111,31 @@ TEST_CASE("[Vibrato] Correct Output") {
 			CSynthesis::generateSine(inputBuffer[c], 440, 44100, numSamples);
 		}
 		SECTION("Params1") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest1.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest1.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 10.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params2") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest2.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest2.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 10.0f, 0.002f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params3") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest3.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest3.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 3.0f, 0.001f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params4") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest4.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest4.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 7.0f, 0.004f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params5") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest5.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest5.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 1.0f, 0.00025f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params6") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest6.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest6.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 0.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("Params7") {
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SineTest7.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest7.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 4.0f, 0.0f, inputBuffer, testBuffer, groundBuffer);
 		}
 	}
@@ -147,7 +147,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 				CSynthesis::generateSine(inputBuffer[c], 440, 1, numSamples);
 			}
 			vibrato->init(numChannels, 1.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SrTest1.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest1.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 4.0f, 0.0025f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("11025") {
@@ -155,7 +155,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 				CSynthesis::generateSine(inputBuffer[c], 440, 11025, numSamples);
 			}
 			vibrato->init(numChannels, 11025.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SrTest2.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest2.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 7.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("22050") {
@@ -163,7 +163,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 				CSynthesis::generateSine(inputBuffer[c], 440, 22050, numSamples);
 			}
 			vibrato->init(numChannels, 22050.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SrTest3.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest3.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 1.0f, 0.001f, inputBuffer, testBuffer, groundBuffer);
 		}
 		SECTION("48000") {
@@ -171,7 +171,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 				CSynthesis::generateSine(inputBuffer[c], 440, 48000, numSamples);
 			}
 			vibrato->init(numChannels, 48000.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/Vibrato/project/test/groundData/SrTest4.txt", groundBuffer);
+			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest4.txt", groundBuffer);
 			SET_AND_CHECK(vibrato.get(), 9.0f, 0.0001f, inputBuffer, testBuffer, groundBuffer);
 		}
 	}
