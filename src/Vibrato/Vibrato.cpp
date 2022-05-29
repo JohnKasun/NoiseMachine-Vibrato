@@ -23,8 +23,8 @@ Error_t Vibrato::init(int numChannels, float sampleRate){
 
 	mNumChannels = numChannels;
 	mSampleRate = sampleRate;
+	mLfo.reset(new Lfo(mSampleRate));
 	for (int c = 0; c < mNumChannels; c++) {
-		mLfo.emplace_back(new Lfo(mSampleRate));
 		mDelayLine.emplace_back(new CRingBuffer<float>(2 + std::round(mParamRanges[widthInSec][1] * mSampleRate) * 3));
 	}
 	mIsInitialized = true;
@@ -37,7 +37,7 @@ Error_t Vibrato::reset(){
 		mSampleRate = 0.0f;
 		for (int param = 0; param < numParams; param++)
 			mParamValues[param] = mParamRanges[param][0];
-		mLfo.clear();
+		mLfo.reset();
 		mDelayLine.clear();
 		mIsInitialized = false;
 	}
@@ -53,14 +53,12 @@ Error_t Vibrato::setParam(Param_t param, float value){
 
 	switch (param) {
 	case freqInHz:
-		for (int c = 0; c < mNumChannels; c++) {
-			mLfo[c]->setParam(Lfo::Param_t::freqInHz, value);
-		}
+		mLfo->setParam(Lfo::Param_t::freqInHz, value);
 		break;
 	case widthInSec:
+		int widthInSamp = std::round(value * mSampleRate);
+		mLfo->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
 		for (int c = 0; c < mNumChannels; c++) {
-			int widthInSamp = std::round(value * mSampleRate);
-			mLfo[c]->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
 			mDelayLine[c]->setWriteIdx(2 + widthInSamp * 3);
 			mDelayLine[c]->setReadIdx(mDelayLine[c]->getWriteIdx() - widthInSamp);
 		}
@@ -77,10 +75,10 @@ Error_t Vibrato::process(float** inputBuffer, float** outputBuffer, int numFrame
 	if (!mIsInitialized)
 		return Error_t::kNotInitializedError;
 
-	for (int c = 0; c < mNumChannels; c++) {
-		for (int i = 0; i < numFrames; i++) {
+	for (int i = 0; i < numFrames; i++) {
+		float index = mLfo->process();
+		for (int c = 0; c < mNumChannels; c++) {
 			mDelayLine[c]->putPostInc(inputBuffer[c][i]);
-			float index = mLfo[c]->process();
 			outputBuffer[c][i] = mDelayLine[c]->getPostInc(index);
 		}
 	}
