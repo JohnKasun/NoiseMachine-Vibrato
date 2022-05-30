@@ -6,9 +6,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudi
     : AudioProcessorEditor(&p), processorRef(p)
 {
     juce::ignoreUnused(processorRef);
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize(400, 300);
+
+
+    addAndMakeVisible(mFreqSlider);
+    mFreqSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    mFreqSlider.setRange(0, 10);
+    mFreqSlider.setValue(0, juce::dontSendNotification);
+    mFreqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+
+    addAndMakeVisible(mDepthSlider);
+    mDepthSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+    mDepthSlider.setRange(0, 0.5);
+    mDepthSlider.setValue(0, juce::dontSendNotification);
+    mDepthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
+
+    setSize(paramControlWidth * 2, paramControlHeight + paramLabelHeight);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -18,16 +30,13 @@ AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
 //==============================================================================
 void AudioPluginAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-    g.setColour(juce::Colours::white);
-    g.setFont(15.0f);
-    g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.fillAll(juce::Colours::darkgrey);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto area = getLocalBounds();
+    auto freqArea = area.removeFromLeft(paramControlWidth);
+    mFreqSlider.setBounds(freqArea);
+    mDepthSlider.setBounds(area);
 }

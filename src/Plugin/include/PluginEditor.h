@@ -6,6 +6,13 @@
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
+
+    enum Dimen_t {
+        paramControlWidth = 250,
+        paramControlHeight = 250,
+        paramLabelHeight = 50
+    };
+
     explicit AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor&);
     ~AudioPluginAudioProcessorEditor() override;
 
@@ -14,9 +21,13 @@ public:
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+
     AudioPluginAudioProcessor& processorRef;
+
+    juce::Slider mFreqSlider;
+    juce::Slider mDepthSlider;
+    juce::Label mFreqLabel;
+    juce::Label mDepthLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };
