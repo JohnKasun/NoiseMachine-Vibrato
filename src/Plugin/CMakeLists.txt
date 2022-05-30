@@ -1,7 +1,7 @@
 juce_add_plugin(VibratoPlugin
     PLUGIN_MANUFACTURER_CODE John
     PLUGIN_CODE Vbro
-    FORMATS VST3 Standalone
+    FORMATS AU AUv3 VST3 Standalone
     PRODUCT_NAME "Vibrato Plugin")
 
 target_sources(VibratoPlugin
