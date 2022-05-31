@@ -2,6 +2,9 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "ErrorDef.h"
+#include "Vibrato.h"
+
 //==============================================================================
 class AudioPluginAudioProcessor : public juce::AudioProcessor
 {
@@ -43,6 +46,10 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
+
+    Vibrato mVibrato;
+
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessor)
 };

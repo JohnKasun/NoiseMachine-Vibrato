@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 	float** inputAudioData  = nullptr;
 	float** outputAudioData = nullptr;
-	unique_ptr<Vibrato> vibrato = nullptr;
+	std::vector<unique_ptr<Vibrato>> vibrato;
 
 	string inputFilePath{};
 	string outputFilePath{};
@@ -61,17 +61,21 @@ int main(int argc, char* argv[])
 	}
 
 	// Create instance
-	vibrato.reset(new Vibrato());
+	for (int c = 0; c < fileSpec.iNumChannels; c++) {
+		vibrato.emplace_back(new Vibrato());
+	}
 
 	// Initialize vibrato
-	if (vibrato->init(fileSpec.iNumChannels, fileSpec.fSampleRateInHz) != Error_t::kNoError ||
-		vibrato->setParam(Vibrato::Param_t::widthInSec, widthInSec)	   != Error_t::kNoError ||
-		vibrato->setParam(Vibrato::Param_t::freqInHz, freqInHz)		   != Error_t::kNoError) {
-		std::cout << "Invalid parameters..." << std::endl;
-		CAudioFileIf::destroy(audioFileIn);
-		CAudioFileIf::destroy(audioFileOut);
-		vibrato.reset();
-		return -1;
+	for (int c = 0; c < vibrato.size(); c++) {
+		if (vibrato[c]->init(fileSpec.fSampleRateInHz) != Error_t::kNoError ||
+			vibrato[c]->setParam(Vibrato::Param_t::widthInSec, widthInSec) != Error_t::kNoError ||
+			vibrato[c]->setParam(Vibrato::Param_t::freqInHz, freqInHz) != Error_t::kNoError) {
+			std::cout << "Invalid parameters..." << std::endl;
+			CAudioFileIf::destroy(audioFileIn);
+			CAudioFileIf::destroy(audioFileOut);
+			vibrato[c].reset();
+			return -1;
+		}
 	}
 
 	// Allocate memory
@@ -86,7 +90,9 @@ int main(int argc, char* argv[])
 	long long iNumFrames = fileBlockSize;
 	while (!audioFileIn->isEof()){
 		audioFileIn->readData(inputAudioData, iNumFrames);
-		vibrato->process(inputAudioData, outputAudioData, iNumFrames);
+		for (int c = 0; c < vibrato.size(); c++) {
+			vibrato[c]->process(inputAudioData[c], outputAudioData[c], iNumFrames);
+		}
 		audioFileOut->writeData(outputAudioData, iNumFrames);
 	}
 
@@ -100,7 +106,7 @@ int main(int argc, char* argv[])
 
 	CAudioFileIf::destroy(audioFileOut);
 	CAudioFileIf::destroy(audioFileOut);
-	vibrato.reset();
+	vibrato.clear();
 
 	return 0;
 }
