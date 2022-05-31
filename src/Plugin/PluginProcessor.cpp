@@ -86,12 +86,16 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String&
 //==============================================================================
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    mVibrato.init(sampleRate);
+    for (Vibrato& vib_c : mVibrato) {
+        vib_c.init(sampleRate);
+    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
 {
-    mVibrato.reset();
+    for (Vibrato& vib_c : mVibrato) {
+        vib_c.reset();
+    }
 }
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -125,6 +129,29 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     juce::ScopedNoDenormals noDenormals;
 
+    for (Vibrato& vib_c : mVibrato) {
+        vib_c.setParam(Vibrato::Param_t::freqInHz, 5);
+        vib_c.setParam(Vibrato::Param_t::widthInSec, 0.0005);
+    }
+
+    if (getNumOutputChannels() <= 0)
+        buffer.clear();
+    
+    switch (getNumInputChannels()) {
+    case 1:
+        mVibrato[0].process(buffer.getReadPointer(0), buffer.getWritePointer(0), buffer.getNumSamples());
+        for (int c = 0; c < getTotalNumOutputChannels(); c++) {
+            buffer.copyFrom(c, 0, buffer.getWritePointer(0), buffer.getNumSamples());
+        }
+        break;
+    case 2:
+        for (int c = 0; c < getTotalNumInputChannels(); c++) {
+            mVibrato[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
+        }
+        break;
+    default:
+        buffer.clear();
+    }
 }
 
 //==============================================================================

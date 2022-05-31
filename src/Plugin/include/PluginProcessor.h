@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <array>
 
 #include "ErrorDef.h"
 #include "Vibrato.h"
@@ -47,7 +48,7 @@ public:
 
 private:
 
-    Vibrato mVibrato;
+    std::array<Vibrato, 2> mVibrato;
 
 
     //==============================================================================

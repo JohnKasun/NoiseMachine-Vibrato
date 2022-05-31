@@ -65,7 +65,7 @@ float Vibrato::getParam(Param_t param) const{
 	return mParamValues[param];
 }
 
-Error_t Vibrato::process(float* inputBuffer, float* outputBuffer, int numFrames){
+Error_t Vibrato::process(const float* inputBuffer, float* outputBuffer, int numFrames){
 	if (!mIsInitialized)
 		return Error_t::kNotInitializedError;
 
