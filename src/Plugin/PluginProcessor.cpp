@@ -88,6 +88,11 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 {
     for (Vibrato& vib_c : mVibrato) {
         vib_c.init(sampleRate);
+
+    }
+    for (Vibrato& vib_c : mVibrato) {
+        vib_c.setParam(Vibrato::Param_t::freqInHz, 3);
+        vib_c.setParam(Vibrato::Param_t::widthInSec, 0.0025);
     }
 }
 
@@ -128,11 +133,6 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     juce::ignoreUnused(midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
-
-    for (Vibrato& vib_c : mVibrato) {
-        vib_c.setParam(Vibrato::Param_t::freqInHz, 5);
-        vib_c.setParam(Vibrato::Param_t::widthInSec, 0.0005);
-    }
 
     if (getNumOutputChannels() <= 0)
         buffer.clear();
