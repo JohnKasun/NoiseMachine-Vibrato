@@ -23,7 +23,7 @@ Error_t Vibrato::init(float sampleRate){
 
 	mSampleRate = sampleRate;
 	mLfo.reset(new Lfo(mSampleRate));
-	mDelayLine.reset(new CRingBuffer<float>(2 + std::round(mParamRanges[widthInSec][1] * mSampleRate) * 3));
+	mDelayLine.reset(new CRingBuffer<float>(1 + std::round(mParamRanges[widthInSec][1] * mSampleRate) * 2));
 	mIsInitialized = true;
 	return Error_t::kNoError;
 }
@@ -54,8 +54,7 @@ Error_t Vibrato::setParam(Param_t param, float value){
 	case widthInSec:
 		int widthInSamp = std::round(value * mSampleRate);
 		mLfo->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
-		mDelayLine->setWriteIdx(2 + widthInSamp * 3);
-		mDelayLine->setReadIdx(mDelayLine->getWriteIdx() - widthInSamp);
+		mDelayLine->setWriteIdx(widthInSamp);
 	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;
