@@ -55,8 +55,7 @@ Error_t Vibrato::setParam(Param_t param, float value){
 		int widthInSamp = std::round(value * mSampleRate);
 		mLfo->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
 
-		// TODO: fix this
-
+		// TODO: fix noise
 		int taps = value - mParamValues[widthInSec];
 		if (taps) {
 			while (taps--) {
@@ -66,11 +65,6 @@ Error_t Vibrato::setParam(Param_t param, float value){
 		else {
 			mDelayLine->setWriteIdx(mDelayLine->getReadIdx() + widthInSamp);
 		}
-		//int newWriteIdx = mDelayLine->getReadIdx() + widthInSamp;
-		//while (mDelayLine->getWriteIdx() < newWriteIdx) {
-		//	mDelayLine->putPostInc(0.0f);
-		//}
-		//mDelayLine->setWriteIdx(newWriteIdx);
 	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;
