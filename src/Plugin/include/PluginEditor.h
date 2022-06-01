@@ -13,7 +13,9 @@ public:
         paramLabelHeight = 50
     };
 
-    explicit AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor&);
+    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+
+    explicit AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor&, juce::AudioProcessorValueTreeState&);
     ~AudioPluginAudioProcessorEditor() override;
 
     //==============================================================================
@@ -22,12 +24,17 @@ public:
 
 private:
 
+    juce::AudioProcessorValueTreeState& mValueTreeState;
+
     AudioPluginAudioProcessor& processorRef;
 
     juce::Slider mFreqSlider;
-    juce::Slider mDepthSlider;
     juce::Label mFreqLabel;
+    std::unique_ptr<SliderAttachment> mFreqAttachment;
+
+    juce::Slider mDepthSlider;
     juce::Label mDepthLabel;
+    std::unique_ptr<SliderAttachment> mDepthAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
 };

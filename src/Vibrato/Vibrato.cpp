@@ -55,11 +55,22 @@ Error_t Vibrato::setParam(Param_t param, float value){
 		int widthInSamp = std::round(value * mSampleRate);
 		mLfo->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
 
-		int newWriteIdx = mDelayLine->getReadIdx() + widthInSamp;
-		while (mDelayLine->getWriteIdx() < newWriteIdx) {
-			mDelayLine->putPostInc(0.0f);
+		// TODO: fix this
+
+		int taps = value - mParamValues[widthInSec];
+		if (taps) {
+			while (taps--) {
+				mDelayLine->putPostInc(0.0f);
+			}
 		}
-		mDelayLine->setWriteIdx(newWriteIdx);
+		else {
+			mDelayLine->setWriteIdx(mDelayLine->getReadIdx() + widthInSamp);
+		}
+		//int newWriteIdx = mDelayLine->getReadIdx() + widthInSamp;
+		//while (mDelayLine->getWriteIdx() < newWriteIdx) {
+		//	mDelayLine->putPostInc(0.0f);
+		//}
+		//mDelayLine->setWriteIdx(newWriteIdx);
 	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;

@@ -48,6 +48,11 @@ public:
 
 private:
 
+    juce::AudioProcessorValueTreeState mParameters;
+
+    std::atomic<float>* mFreqParam = nullptr;
+    std::atomic<float>* mDepthParam = nullptr;
+
     std::array<Vibrato, 2> mVibrato;
 
 

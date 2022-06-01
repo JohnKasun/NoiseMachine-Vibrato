@@ -10,8 +10,17 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 #endif
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    )
+    ),
+    mParameters(*this, nullptr, juce::Identifier("Paramters"),
+        {
+            std::make_unique<juce::AudioParameterFloat>("freq", "Freq", 0.0f, 10.0f, 0.0f),
+            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 0.005f, 0.0f)
+        })
 {
+    mFreqParam = mParameters.getRawParameterValue("freq");
+    mDepthParam = mParameters.getRawParameterValue("depth");
+
+
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -90,10 +99,6 @@ void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
         vib_c.init(sampleRate);
 
     }
-    for (Vibrato& vib_c : mVibrato) {
-        vib_c.setParam(Vibrato::Param_t::freqInHz, 3);
-        vib_c.setParam(Vibrato::Param_t::widthInSec, 0.0025);
-    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -134,6 +139,15 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     juce::ScopedNoDenormals noDenormals;
 
+
+
+    for (Vibrato& vib_c : mVibrato) {
+        vib_c.setParam(Vibrato::Param_t::freqInHz, *mFreqParam);
+        if (vib_c.setParam(Vibrato::Param_t::widthInSec, *mDepthParam) == Error_t::kFunctionInvalidArgsError) {
+            auto x = 0;
+        };
+    }
+
     if (getNumOutputChannels() <= 0)
         buffer.clear();
     
@@ -162,23 +176,25 @@ bool AudioPluginAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
 {
-    return new AudioPluginAudioProcessorEditor(*this);
+    return new AudioPluginAudioProcessorEditor(*this, mParameters);
 }
 
 //==============================================================================
 void AudioPluginAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused(destData);
+    auto state = mParameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void AudioPluginAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused(data, sizeInBytes);
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState.get() != nullptr) {
+        if (xmlState->hasTagName(mParameters.state.getType())) {
+            mParameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+        }
+    }
 }
 
 //==============================================================================

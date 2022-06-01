@@ -2,22 +2,19 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor(&p), processorRef(p)
+AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor(AudioPluginAudioProcessor& p, juce::AudioProcessorValueTreeState& vts)
+    : AudioProcessorEditor(&p), processorRef(p), mValueTreeState(vts)
 {
     juce::ignoreUnused(processorRef);
 
-
     addAndMakeVisible(mFreqSlider);
+    mFreqAttachment.reset(new SliderAttachment(mValueTreeState, "freq", mFreqSlider));
     mFreqSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    mFreqSlider.setRange(0, 10);
-    mFreqSlider.setValue(0, juce::dontSendNotification);
     mFreqSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
 
     addAndMakeVisible(mDepthSlider);
+    mDepthAttachment.reset(new SliderAttachment(mValueTreeState, "depth", mDepthSlider));
     mDepthSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
-    mDepthSlider.setRange(0, 0.5);
-    mDepthSlider.setValue(0, juce::dontSendNotification);
     mDepthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, paramControlWidth, paramLabelHeight);
 
     setSize(paramControlWidth * 2, paramControlHeight + paramLabelHeight);
