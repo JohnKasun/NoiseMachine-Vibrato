@@ -23,7 +23,7 @@ Error_t Vibrato::init(float sampleRate){
 
 	mSampleRate = sampleRate;
 	mLfo.reset(new Lfo(mSampleRate));
-	mDelayLine.reset(new CRingBuffer<float>(1 + std::round(mParamRanges[widthInSec][1] * mSampleRate) * 2));
+	mDelayLine.reset(new CRingBuffer<float>(1 + CUtil::float2int<int>(mParamRanges[widthInSec][1] * mSampleRate) * 2));
 	mIsInitialized = true;
 	return Error_t::kNoError;
 }
@@ -52,18 +52,17 @@ Error_t Vibrato::setParam(Param_t param, float value){
 		mLfo->setParam(Lfo::Param_t::freqInHz, value);
 		break;
 	case widthInSec:
-		int widthInSamp = std::round(value * mSampleRate);
+		int widthInSamp = CUtil::float2int<int>(value * mSampleRate);
 		mLfo->setParam(Lfo::Param_t::amplitude, -1 * widthInSamp);
-
 		// TODO: fix noise
-		int taps = value - mParamValues[widthInSec];
-		if (taps) {
-			while (taps--) {
-				mDelayLine->putPostInc(0.0f);
-			}
+		int taps = CUtil::float2int<int>(value - mParamValues[widthInSec]);
+		if (taps <= 0) {
+			mDelayLine->setWriteIdx(widthInSamp + mDelayLine->getReadIdx());
 		}
 		else {
-			mDelayLine->setWriteIdx(mDelayLine->getReadIdx() + widthInSamp);
+			for (int i = 0; i < taps; i++) {
+				mDelayLine->putPostInc(0.0f);
+			}
 		}
 	}
 	mParamValues[param] = value;
