@@ -14,13 +14,13 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     mParameters(*this, nullptr, juce::Identifier("Paramters"),
         {
             std::make_unique<juce::AudioParameterFloat>("freq", "Freq", 0.0f, 10.0f, 0.0f),
-            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 5.0f, 0.0f)
+            std::make_unique<juce::AudioParameterFloat>("depth", "Depth", juce::NormalisableRange<float>(0, 0.005), 0.0f)
         })
 {
     mFreqParam = mParameters.getRawParameterValue("freq");
     mDepthParam = mParameters.getRawParameterValue("depth");
 
-
+    
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -143,8 +143,7 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     for (Vibrato& vib_c : mVibrato) {
         vib_c.setParam(Vibrato::Param_t::freqInHz, *mFreqParam);
-                                            // TODO : vv Figure this out vv
-        vib_c.setParam(Vibrato::Param_t::widthInSec, *mDepthParam / 1000.0f);
+        vib_c.setParam(Vibrato::Param_t::widthInSec, *mDepthParam);
     }
 
     if (getNumOutputChannels() <= 0)
