@@ -54,6 +54,9 @@ Error_t Vibrato::setParam(Param_t param, float value){
 		break;
 	case widthInSec:
 		mLfo->setParam(Lfo::Param_t::amplitude, value * mSampleRate);
+		break;
+	default:
+		return Error_t::kFunctionInvalidArgsError;
 	}
 	mParamValues[param] = value;
 	return Error_t::kNoError;
