@@ -8,32 +8,17 @@
 #include "Synthesis.h"
 #include "Vector.h"
 
-void CHECK_ARRAY_CLOSE(float* buff1, std::vector<float>& buff2, int numSamples, float tolerance) {
+void CHECK_ARRAY_CLOSE(float* buff1, float* buff2, int numSamples, float tolerance) {
 	for (int i = 0; i < numSamples; i++) {
 		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
 	}
 }
 
-void SET_AND_CHECK(Vibrato* vibrato, float freq, float width, float* inputBuffer, float* testBuffer, std::vector<float>& groundBuffer, int numSamples = 1000) {
+void SET_AND_CHECK(Vibrato* vibrato, float freq, float width, float* inputBuffer, float* testBuffer, float* groundBuffer, int numSamples = 1000) {
 	vibrato->setParam(Vibrato::Param_t::freqInHz, freq);
 	vibrato->setParam(Vibrato::Param_t::widthInSec, width);
 	vibrato->process(inputBuffer, testBuffer, numSamples);
-	CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, std::min<int>(numSamples, groundBuffer.size()), 1E-3);
-}
-
-void loadFile(const char* filePath, std::vector<float>& dataVec) {
-	std::ifstream in_file;
-	in_file.open(filePath);
-	if (!in_file) {
-		std::cout << "Error opening file " << filePath << std::endl;
-		in_file.close();
-		return;
-	}
-	float value{};
-	while (in_file >> value) {
-		dataVec.push_back(value);
-	}
-	in_file.close();
+	CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, numSamples, 1E-3);
 }
 
 TEST_CASE("[Vibrato] Error checking") {
@@ -83,9 +68,9 @@ TEST_CASE("[Vibrato] Correct Output") {
 	std::unique_ptr<Vibrato> vibrato = nullptr;
 	float* inputBuffer = nullptr;
 	float* testBuffer = nullptr;
+	float* groundBuffer = nullptr;
 	const int numSamples = 1000;
 	const float sampleRate = 44100;
-	std::vector<float> groundBuffer;
 
 	vibrato.reset(new Vibrato());
 	vibrato->init(sampleRate);
@@ -94,76 +79,27 @@ TEST_CASE("[Vibrato] Correct Output") {
 
 	SECTION("Zero Input") {
 		CVectorFloat::setZero(inputBuffer, numSamples);
-		groundBuffer.clear();
+		CVectorFloat::setZero(groundBuffer, numSamples);
 		SET_AND_CHECK(vibrato.get(), 1.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
 	}
 
-	SECTION("Sine Input") {
+	SECTION("Zero Depth") {
 		CSynthesis::generateSine(inputBuffer, 440, 44100, numSamples);
-		SECTION("Params1") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest1.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 10.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params2") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest2.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 10.0f, 0.002f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params3") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest3.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 3.0f, 0.001f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params4") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest4.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 7.0f, 0.004f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params5") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest5.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 1.0f, 0.00025f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params6") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest6.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 0.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("Params7") {
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SineTest7.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 4.0f, 0.0f, inputBuffer, testBuffer, groundBuffer);
-		}
+		CSynthesis::generateSine(testBuffer, 440, 44100, numSamples);
 	}
 
-	SECTION("Different Sample Rates") {
-		vibrato->reset();
-		SECTION("1") {
-			CSynthesis::generateSine(inputBuffer, 440, 1, numSamples);
-			vibrato->init(1.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest1.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 4.0f, 0.0025f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("11025") {
-			CSynthesis::generateSine(inputBuffer, 440, 11025, numSamples);
-			vibrato->init(11025.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest2.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 7.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("22050") {
-			CSynthesis::generateSine(inputBuffer, 440, 22050, numSamples);
-			vibrato->init(22050.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest3.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 1.0f, 0.001f, inputBuffer, testBuffer, groundBuffer);
-		}
-		SECTION("48000") {
-			CSynthesis::generateSine(inputBuffer, 440, 48000, numSamples);
-			vibrato->init(48000.0f);
-			loadFile("C:/Users/JohnK/Documents/ASE/AudioEffect_Vibrato/project/test/groundData/SrTest4.txt", groundBuffer);
-			SET_AND_CHECK(vibrato.get(), 9.0f, 0.0001f, inputBuffer, testBuffer, groundBuffer);
-		}
+	SECTION("DC") {
+
 	}
 
-	groundBuffer.clear();
+	CVectorFloat::setZero(groundBuffer, numSamples);
 	CVectorFloat::setZero(testBuffer, numSamples);
 
 	vibrato.reset();
 	delete[] inputBuffer;
 	delete[] testBuffer;
+	delete[] groundBuffer;
 	inputBuffer = nullptr;
 	testBuffer = nullptr;
+	groundBuffer = nullptr;
 }
