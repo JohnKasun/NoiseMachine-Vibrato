@@ -95,8 +95,6 @@ TEST_CASE("[Vibrato] Correct Output") {
 		CHECK_ARRAY_CLOSE_Vib(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
 	}
 
-	CVectorFloat::setZero(testBuffer, numSamples);
-
 	vibrato.reset();
 	delete[] inputBuffer;
 	delete[] testBuffer;
