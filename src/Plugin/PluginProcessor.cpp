@@ -19,8 +19,6 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 {
     mFreqParam = mParameters.getRawParameterValue("freq");
     mDepthParam = mParameters.getRawParameterValue("depth");
-
-    
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
