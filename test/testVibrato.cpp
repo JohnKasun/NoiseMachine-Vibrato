@@ -7,12 +7,7 @@
 #include "Vibrato.h"
 #include "Synthesis.h"
 #include "Vector.h"
-
-void CHECK_ARRAY_CLOSE_Vib(float* buff1, float* buff2, int numSamples, float tolerance) {
-	for (int i = 0; i < numSamples; i++) {
-		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
-	}
-}
+#include "CatchUtil.h"
 
 TEST_CASE("[Vibrato] Error checking") {
 	std::unique_ptr<Vibrato> vibrato = nullptr;
@@ -76,7 +71,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 		vibrato->setParam(Vibrato::Param_t::freqInHz, 1.0f);
 		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
-		CHECK_ARRAY_CLOSE_Vib(inputBuffer, testBuffer, numSamples, 1E-3);
+		CatchUtil::compare(inputBuffer, testBuffer, numSamples, 1E-3);
 	}
 
 	SECTION("Zero Depth") {
@@ -84,7 +79,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 		vibrato->setParam(Vibrato::Param_t::freqInHz, 5.0f);
 		vibrato->setParam(Vibrato::Param_t::widthInSec, 0);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
-		CHECK_ARRAY_CLOSE_Vib(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
+		CatchUtil::compare(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
 	}
 
 	SECTION("DC") {
@@ -92,7 +87,7 @@ TEST_CASE("[Vibrato] Correct Output") {
 		vibrato->setParam(Vibrato::Param_t::freqInHz, 3.0f);
 		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.0025);
 		vibrato->process(inputBuffer, testBuffer, numSamples);
-		CHECK_ARRAY_CLOSE_Vib(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
+		CatchUtil::compare(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
 	}
 
 	vibrato.reset();

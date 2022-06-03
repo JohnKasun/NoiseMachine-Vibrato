@@ -4,6 +4,7 @@ target_sources(Tests
     PRIVATE
         testVibrato.cpp
         testLfo.cpp
+        CatchUtil.cpp
 )
 target_link_libraries(Tests
     PUBLIC
