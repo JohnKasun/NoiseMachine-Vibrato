@@ -8,17 +8,10 @@
 #include "Synthesis.h"
 #include "Vector.h"
 
-void CHECK_ARRAY_CLOSE(float* buff1, float* buff2, int numSamples, float tolerance) {
+void CHECK_ARRAY_CLOSE_Vib(float* buff1, float* buff2, int numSamples, float tolerance) {
 	for (int i = 0; i < numSamples; i++) {
 		REQUIRE(abs(buff1[i] - buff2[i]) <= tolerance);
 	}
-}
-
-void SET_AND_CHECK(Vibrato* vibrato, float freq, float width, float* inputBuffer, float* testBuffer, float* groundBuffer, int numSamples = 1000) {
-	vibrato->setParam(Vibrato::Param_t::freqInHz, freq);
-	vibrato->setParam(Vibrato::Param_t::widthInSec, width);
-	vibrato->process(inputBuffer, testBuffer, numSamples);
-	CHECK_ARRAY_CLOSE(testBuffer, groundBuffer, numSamples, 1E-3);
 }
 
 TEST_CASE("[Vibrato] Error checking") {
@@ -68,9 +61,10 @@ TEST_CASE("[Vibrato] Correct Output") {
 	std::unique_ptr<Vibrato> vibrato = nullptr;
 	float* inputBuffer = nullptr;
 	float* testBuffer = nullptr;
-	float* groundBuffer = nullptr;
 	const int numSamples = 1000;
 	const float sampleRate = 44100;
+	const float maxWidth = 0.005f;
+	const int delay = 1 + CUtil::float2int<int>(maxWidth * sampleRate);
 
 	vibrato.reset(new Vibrato());
 	vibrato->init(sampleRate);
@@ -79,27 +73,33 @@ TEST_CASE("[Vibrato] Correct Output") {
 
 	SECTION("Zero Input") {
 		CVectorFloat::setZero(inputBuffer, numSamples);
-		CVectorFloat::setZero(groundBuffer, numSamples);
-		SET_AND_CHECK(vibrato.get(), 1.0f, 0.005f, inputBuffer, testBuffer, groundBuffer);
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 1.0f);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.005);
+		vibrato->process(inputBuffer, testBuffer, numSamples);
+		CHECK_ARRAY_CLOSE_Vib(inputBuffer, testBuffer, numSamples, 1E-3);
 	}
 
 	SECTION("Zero Depth") {
-		CSynthesis::generateSine(inputBuffer, 440, 44100, numSamples);
-		CSynthesis::generateSine(testBuffer, 440, 44100, numSamples);
+		CSynthesis::generateSine(inputBuffer, 440, sampleRate, numSamples);
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 5.0f);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0);
+		vibrato->process(inputBuffer, testBuffer, numSamples);
+		CHECK_ARRAY_CLOSE_Vib(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
 	}
 
 	SECTION("DC") {
-
+		CSynthesis::generateDc(inputBuffer, numSamples, 5);
+		vibrato->setParam(Vibrato::Param_t::freqInHz, 3.0f);
+		vibrato->setParam(Vibrato::Param_t::widthInSec, 0.0025);
+		vibrato->process(inputBuffer, testBuffer, numSamples);
+		CHECK_ARRAY_CLOSE_Vib(testBuffer + delay, inputBuffer, numSamples - delay, 1E-3);
 	}
 
-	CVectorFloat::setZero(groundBuffer, numSamples);
 	CVectorFloat::setZero(testBuffer, numSamples);
 
 	vibrato.reset();
 	delete[] inputBuffer;
 	delete[] testBuffer;
-	delete[] groundBuffer;
 	inputBuffer = nullptr;
 	testBuffer = nullptr;
-	groundBuffer = nullptr;
 }
