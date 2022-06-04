@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "MyLookAndFeel.h"
 
 //==============================================================================
 class AudioPluginAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -24,16 +25,15 @@ public:
 
 private:
 
+    MyLookAndFeel mMyLookAndFeel;
     juce::AudioProcessorValueTreeState& mValueTreeState;
 
     AudioPluginAudioProcessor& processorRef;
 
     juce::Slider mFreqSlider;
-    juce::Label mFreqLabel;
     std::unique_ptr<SliderAttachment> mFreqAttachment;
 
     juce::Slider mDepthSlider;
-    juce::Label mDepthLabel;
     std::unique_ptr<SliderAttachment> mDepthAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AudioPluginAudioProcessorEditor)
