@@ -22,6 +22,7 @@ target_include_directories(${CurrLib}
 )
 
 target_link_libraries(${CurrLib}
-        RingBuffer
-        Utility
+        PUBLIC
+                Utility
+                RingBuffer
 )

@@ -22,6 +22,8 @@ target_include_directories(${CurrLib}
 )
 
 target_link_libraries(Vibrato
-        Lfo
-        Utility
+        PUBLIC
+                Utility
+                Lfo
+                RingBuffer
 )

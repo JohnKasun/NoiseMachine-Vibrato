@@ -17,7 +17,8 @@ target_sources(${APP}
         ${${APP}_DEPEND}
 )
 target_link_libraries(${APP}
-    PUBLIC
+    PRIVATE
         Lfo
         Vibrato
+        Utility
 )

@@ -16,8 +16,10 @@ target_sources(${APP}
                 ${${APP}_DEPEND})
 
 target_link_libraries(${APP}
-        Vibrato
-        Utility
-        Lfo
-        AudioFileIO
+        PRIVATE
+                Vibrato
+                Utility
+                AudioFileIO
+                Lfo
+                RingBuffer
 )

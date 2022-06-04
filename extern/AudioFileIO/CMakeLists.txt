@@ -10,4 +10,8 @@ set_target_properties(${CurrLib} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 set_target_properties(${CurrLib} PROPERTIES OUTPUT_NAME "${CurrLib}")
 set_target_properties(${CurrLib} PROPERTIES PREFIX "lib")
 
-target_link_libraries(${CurrLib} sndlib Utility)
+target_link_libraries(${CurrLib} 
+    PRIVATE
+        sndlib 
+    PUBLIC
+        Utility)
