@@ -1,12 +1,22 @@
-add_executable(Tests main.cpp)
-target_include_directories(Tests PUBLIC include)
-target_sources(Tests 
+set(APP Tests)
+
+add_executable(${APP})
+
+file(GLOB ${APP}_SOURCES *.cpp)
+file(GLOB ${APP}_HEADERS include/*.h; include/*.hpp)
+
+set(${APP}_DEPEND)
+list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Vibrato/include/Vibrato.h)
+list(APPEND ${APP}_DEPEND ${CMAKE_SOURCE_DIR}/src/Lfo/include/Lfo.h)
+
+target_include_directories(${APP} PUBLIC include)
+target_sources(${APP} 
     PRIVATE
-        testVibrato.cpp
-        testLfo.cpp
-        CatchUtil.cpp
+        ${${APP}_SOURCES}
+        ${${APP}_HEADERS}
+        ${${APP}_DEPEND}
 )
-target_link_libraries(Tests
+target_link_libraries(${APP}
     PUBLIC
         Lfo
         Vibrato
