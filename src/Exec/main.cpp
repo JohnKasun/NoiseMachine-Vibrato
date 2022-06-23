@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 		delete[] inputAudioData;
 		delete[] outputAudioData;
 
-		CAudioFileIf::destroy(audioFileOut);
+		CAudioFileIf::destroy(audioFileIn);
 		CAudioFileIf::destroy(audioFileOut);
 		vibrato.clear();
 
