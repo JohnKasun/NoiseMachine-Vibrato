@@ -4,7 +4,8 @@ juce_add_plugin(${APP}
     PLUGIN_MANUFACTURER_CODE John
     PLUGIN_CODE Vbro
     FORMATS AU AUv3 VST3 Standalone
-    PRODUCT_NAME "Vibrato Plugin")
+    PRODUCT_NAME "Vibrato"
+    COMPANY_NAME NoiseMachine)
 
 file(GLOB ${APP}_SOURCES *.cpp)
 file(GLOB ${APP}_HEADERS include/*.h)
