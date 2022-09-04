@@ -4,12 +4,8 @@
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
     : AudioProcessor(BusesProperties()
-#if ! JucePlugin_IsMidiEffect
-#if ! JucePlugin_IsSynth
         .withInput("Input", juce::AudioChannelSet::stereo(), true)
-#endif
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
-#endif
     ),
     mParameters(*this, nullptr, juce::Identifier("Paramters"),
         {
@@ -33,29 +29,17 @@ const juce::String AudioPluginAudioProcessor::getName() const
 
 bool AudioPluginAudioProcessor::acceptsMidi() const
 {
-#if JucePlugin_WantsMidiInput
-    return true;
-#else
     return false;
-#endif
 }
 
 bool AudioPluginAudioProcessor::producesMidi() const
 {
-#if JucePlugin_ProducesMidiOutput
-    return true;
-#else
     return false;
-#endif
 }
 
 bool AudioPluginAudioProcessor::isMidiEffect() const
 {
-#if JucePlugin_IsMidiEffect
-    return true;
-#else
     return false;
-#endif
 }
 
 double AudioPluginAudioProcessor::getTailLengthSeconds() const
@@ -108,26 +92,14 @@ void AudioPluginAudioProcessor::releaseResources()
 
 bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-#if JucePlugin_IsMidiEffect
-    juce::ignoreUnused(layouts);
-    return true;
-#else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
         && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-#if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-#endif
 
     return true;
-#endif
 }
 
 void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
@@ -137,30 +109,18 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     juce::ScopedNoDenormals noDenormals;
 
-
-
     for (Vibrato& vib_c : mVibrato) {
         vib_c.setParam(Vibrato::Param_t::freqInHz, *mFreqParam);
         vib_c.setParam(Vibrato::Param_t::widthInSec, *mDepthParam);
     }
 
-    if (getNumOutputChannels() <= 0)
-        buffer.clear();
-    
-    switch (getNumInputChannels()) {
-    case 1:
-        mVibrato[0].process(buffer.getReadPointer(0), buffer.getWritePointer(0), buffer.getNumSamples());
-        for (int c = 0; c < getTotalNumOutputChannels(); c++) {
-            buffer.copyFrom(c, 0, buffer.getWritePointer(0), buffer.getNumSamples());
-        }
-        break;
-    case 2:
-        for (int c = 0; c < getTotalNumInputChannels(); c++) {
-            mVibrato[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
-        }
-        break;
-    default:
-        buffer.clear();
+    auto inputBuffer = getBusBuffer(buffer, true, 0);
+    auto outputBuffer = getBusBuffer(buffer, false, 0);
+    for (auto c = 0; c < inputBuffer.getNumChannels(); c++) {
+        mVibrato[c].process(buffer.getReadPointer(c), buffer.getWritePointer(c), buffer.getNumSamples());
+    }
+    for (auto c = inputBuffer.getNumChannels(); c < outputBuffer.getNumChannels(); c++) {
+        buffer.copyFrom(c, 0, buffer.getReadPointer(0), buffer.getNumSamples());
     }
 }
 
